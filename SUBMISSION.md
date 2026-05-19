@@ -1,7 +1,4 @@
-# AtomQuest Goal Portal — Hackathon Submission 🚀
-
-**Team / Project Name:** AtomQuest Goal Portal  
-**Hackathon:** Atomberg Internal Hackathon 2026  
+# AtomQuest Goal Portal — Hackathon Submission    
 
 ---
 
