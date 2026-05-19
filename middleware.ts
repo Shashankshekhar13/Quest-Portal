@@ -1,0 +1,113 @@
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+
+/**
+ * Middleware that protects all routes except public ones.
+ * - Refreshes the Supabase auth session on every request.
+ * - Redirects unauthenticated users to /login.
+ * - Redirects authenticated users on /login to their role-based dashboard.
+ */
+
+const PUBLIC_ROUTES = ["/login", "/auth/callback"];
+
+function isPublicRoute(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.includes(".")
+  );
+}
+
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Check if Supabase is configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl === "your_url" ||
+    supabaseAnonKey === "your_key"
+  ) {
+    // Supabase not configured — allow all routes (dev mode)
+    return NextResponse.next();
+  }
+
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value)
+        );
+        supabaseResponse = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
+
+  // Refresh the session
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Public routes — allow through
+  if (isPublicRoute(pathname)) {
+    // If authenticated user visits /login, redirect to their dashboard
+    if (pathname === "/login" && user) {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (userData?.role) {
+        return NextResponse.redirect(
+          new URL(`/dashboard/${userData.role}`, request.url)
+        );
+      }
+    }
+    return supabaseResponse;
+  }
+
+  // Protected routes — redirect to login if no session
+  if (!user) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectTo", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Role-based route protection for dashboard paths
+  if (pathname.startsWith("/dashboard/")) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (userData?.role) {
+      const expectedPath = `/dashboard/${userData.role}`;
+      if (!pathname.startsWith(expectedPath)) {
+        return NextResponse.redirect(new URL(expectedPath, request.url));
+      }
+    }
+  }
+
+  return supabaseResponse;
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};
