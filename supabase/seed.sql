@@ -10,7 +10,7 @@ VALUES (
   'Admin User',
   'admin',
   'Engineering'
-) ON CONFLICT (email) DO NOTHING;
+) ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, role = EXCLUDED.role;
 
 -- Manager
 INSERT INTO users (id, email, name, role, department)
@@ -20,7 +20,7 @@ VALUES (
   'Manager User',
   'manager',
   'Engineering'
-) ON CONFLICT (email) DO NOTHING;
+) ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, role = EXCLUDED.role;
 
 -- Employee 1
 INSERT INTO users (id, email, name, role, manager_id, department)
@@ -31,7 +31,7 @@ VALUES (
   'employee',
   'b0000000-0000-0000-0000-000000000001',
   'Engineering'
-) ON CONFLICT (email) DO NOTHING;
+) ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, role = EXCLUDED.role, manager_id = EXCLUDED.manager_id;
 
 -- Employee 2
 INSERT INTO users (id, email, name, role, manager_id, department)
@@ -42,7 +42,7 @@ VALUES (
   'employee',
   'b0000000-0000-0000-0000-000000000001',
   'Engineering'
-) ON CONFLICT (email) DO NOTHING;
+) ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, role = EXCLUDED.role, manager_id = EXCLUDED.manager_id;
 
 -- Employee 3
 INSERT INTO users (id, email, name, role, manager_id, department)
@@ -53,7 +53,7 @@ VALUES (
   'employee',
   'b0000000-0000-0000-0000-000000000001',
   'Engineering'
-) ON CONFLICT (email) DO NOTHING;
+) ON CONFLICT (email) DO UPDATE SET id = EXCLUDED.id, name = EXCLUDED.name, role = EXCLUDED.role, manager_id = EXCLUDED.manager_id;
 
 -- Active cycle
 INSERT INTO cycles (id, name, phase, opens_at, closes_at, is_active)
