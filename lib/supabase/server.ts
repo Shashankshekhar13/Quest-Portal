@@ -8,8 +8,15 @@ import { cookies } from "next/headers";
 export async function createClient() {
   const cookieStore = await cookies();
 
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  
+  // If the URL is just the project reference ID (e.g. efunwcxvsgvxecewshso), convert it to a full URL
+  if (supabaseUrl && !supabaseUrl.startsWith("http")) {
+    supabaseUrl = `https://${supabaseUrl}.supabase.co`;
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseUrl,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {

@@ -116,8 +116,9 @@ export default function LoginPage() {
       const role = userData.role as UserRole;
       router.push(`/dashboard/${role}`);
       router.refresh();
-    } catch {
-      setServerError("An unexpected error occurred. Please try again.");
+    } catch (err: any) {
+      console.error("Login unexpected error:", err);
+      setServerError(`An unexpected error occurred: ${err?.message || String(err)}`);
       setIsLoading(false);
     }
   };

@@ -23,8 +23,7 @@ function isPublicRoute(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Check if Supabase is configured
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (
@@ -35,6 +34,11 @@ export async function middleware(request: NextRequest) {
   ) {
     // Supabase not configured — allow all routes (dev mode)
     return NextResponse.next();
+  }
+
+  // If the URL is just the project reference ID (e.g. efunwcxvsgvxecewshso), convert it to a full URL
+  if (supabaseUrl && !supabaseUrl.startsWith("http")) {
+    supabaseUrl = `https://${supabaseUrl}.supabase.co`;
   }
 
   let supabaseResponse = NextResponse.next({ request });
