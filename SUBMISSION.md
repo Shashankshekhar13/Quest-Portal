@@ -8,7 +8,7 @@
 ## 🔗 Live Links & Repository
 
 - **Live Demo URL:** [https://atomquest-portal.vercel.app](https://atomquest-portal.vercel.app) *(Replace with your actual Vercel URL after deployment)*
-- **GitHub Repository:** [https://github.com/atomberg/atomquest-goal-portal](https://github.com/atomberg/atomquest-goal-portal) *(Replace with your actual GitHub URL)*
+- **GitHub Repository:** [https://github.com/Shashankshekhar13/Quest-Portal](https://github.com/Shashankshekhar13/Quest-Portal)
 
 ---
 
