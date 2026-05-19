@@ -4,39 +4,6 @@ AtomQuest is built on a modern, decoupled serverless architecture designed for m
 
 ---
 
-## 📊 Visual Architecture (Mermaid)
-
-```mermaid
-graph TD
-    subgraph Frontend["Frontend Layer (Next.js 15 App Router)"]
-        CC["Client Components<br>(Tailwind CSS, Lucide Icons, Interactive UI)"]
-        SC["Server Components<br>(API Handlers, SSR, Server Actions)"]
-    end
-
-    subgraph CDN["Edge & Hosting Layer"]
-        Vercel["Vercel Edge Network<br>(Global CDN, Automated CI/CD, Edge Routing)"]
-    end
-
-    subgraph Backend["Backend & Database Layer (Supabase / PostgreSQL)"]
-        Auth["Supabase Auth<br>(RLS & JWT RBAC Sessions)"]
-        Triggers["PL/pgSQL Triggers<br>(Goal Lock & Tamper Safety)"]
-        DB[(PostgreSQL Database<br>users, goal_sheets, goals, checkins, cycles)]
-    end
-
-    CC -- "HTTPS / REST" --> Vercel
-    SC -- "Supabase Client / RPC" --> Vercel
-    Vercel -- "Secure Connection" --> Auth
-    Vercel -- "Secure Connection" --> Triggers
-    Auth --> DB
-    Triggers --> DB
-
-    style Frontend fill:#f3f4f6,stroke:#374151,stroke-width:2px
-    style CDN fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
-    style Backend fill:#dcfce7,stroke:#16a34a,stroke-width:2px
-    style DB fill:#bbf7d0,stroke:#16a34a,stroke-width:2px
-```
-
----
 
 ## 🖥️ Structural ASCII Diagram
 
